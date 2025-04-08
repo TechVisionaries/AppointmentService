@@ -1,0 +1,19 @@
+{
+  "name": "appointmentservice",
+  "version": "1.0.0",
+  "description": "MediSync appointment service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechVisionaries/AppointmentService.git"
+  },
+  "author": "Ayeshmantha S K S (IT21219320)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TechVisionaries/AppointmentService/issues"
+  },
+  "homepage": "https://github.com/TechVisionaries/AppointmentService#readme"
+}
