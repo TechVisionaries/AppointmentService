@@ -9,6 +9,7 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 import appointmentRoutes from './routes/appointmentRoutes.js';
 
+// Load environment variables from .env file
 dotenv.config();
 
 const PORT = process.env.PORT || 5005;

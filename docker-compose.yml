@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  appointment-service:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: medisync-db
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "root"
+      MSSQL_PID: "Express"
+    volumes:
+      - db_data:/var/opt/mssql
+
+volumes:
+  db_data:
