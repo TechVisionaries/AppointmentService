@@ -1,0 +1,9 @@
+aws ecr create-repository --repository-name appointment-service
+
+aws ecr get-login-password | docker login --username AWS --password-stdin 575108922870.dkr.ecr.us-east-1.amazonaws.com
+
+docker build -t appointment-service:latest .
+
+docker tag appointment-service:latest 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service
+
+docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service

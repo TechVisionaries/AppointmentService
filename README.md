@@ -41,6 +41,28 @@ The AppointmentService is a microservice within the MediSync system that manages
    npm start
    ```
 
+## Docker Setup
+
+1. Build the Docker image:
+   ```bash
+   docker build -t appointment-service:latest .
+   ```
+
+2. Tag the Docker image:
+   ```bash
+   docker tag appointment-service:latest huntrix007/appointment-service:1.0
+   ```
+
+3. Push the Docker image to a repository:
+   ```bash
+   docker push huntrix007/appointment-service:1.0
+   ```
+
+4. Start the service using Docker Compose:
+   ```bash
+   docker-compose up
+   ```
+
 ## Usage
 
 - Access the API endpoints via the configured base URL.
