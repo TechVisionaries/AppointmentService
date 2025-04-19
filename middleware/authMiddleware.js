@@ -3,71 +3,33 @@ import asyncHandler from 'express-async-handler';
 
 // Lowest level of authorization - Anyone who has logged in can access
 const authLvl1 = asyncHandler(async (req, res, next) => {
-    let token = req.headers.authorization?.split(' ')[1];
-    let roles = ["ROLE_PATIENT","ROLE_DOCTOR","ROLE_ADMIN"]
-    try {
-        let email = validateToken(token, roles);
-        req.email = email
+    const authHeader = req.headers.authorization;
 
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ message: "Missing or malformed token" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const decodedSecret = Buffer.from(process.env.JWT_SECRET, "base64");
+
+        const decoded = jwt.verify(token, decodedSecret);
+
+
+        req.user = decoded;
         next();
     } catch (error) {
-        res.status(401).json({message: error.message});
-        return
-    }   
+        return res.status(403).json({ message: "Invalid or expired token" });
+    }  
 });
 
 // Middle level of authorization - Only Faculty and Admin can access
 const authLvl2 = asyncHandler(async (req, res, next) => {
-    let token = req.headers.authorization?.split(' ')[1];
-    let roles = ["ROLE_DOCTOR","ROLE_ADMIN"]
-    try {
-        let email = validateToken(token, roles);
-        req.email = email
-
-        next();
-    } catch (error) {
-        res.status(401).json({message: error.message});
-        return
-    }  
-});
-
-// Highest level of authorization - Only Admin can access
-const authLvl3 = asyncHandler(async (req, res, next) => {
-    let token = req.headers.authorization?.split(' ')[1];
-    let roles = ["ROLE_ADMIN"]
-    try {
-        let email = validateToken(token, roles);
-        req.email = email
-
-        next();
-    } catch (error) {
-        res.status(401).json({message: error.message});
-        return
-    } 
-});
-
-
-const validateToken = (token, roles) => {
-
-    if(token){
-        try {
-            console.log(token);
-            const decoded = jwt.verify(token, Buffer.from(process.env.JWT_SECRET, 'base64'));
-
-            let userRoles = decoded.role?.split(',');
-            if(!userRoles.some(r => roles.includes(r))){
-                throw new Error('Not Authorized, insufficient access level');
-            }
-
-            return decoded.sub;
-
-        } catch (error) {
-            console.log(error);
-            throw new Error(error.message + ". Please login again");
-        }
-    }else{
-        throw new Error('Not Authorized, no token');
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
     }
-}
+    next();
+});
 
-export { authLvl1, authLvl2, authLvl3 };
+export { authLvl1, authLvl2 };
