@@ -14,11 +14,17 @@ services:
 
   appointment-service:
     restart: always
-    image: huntrix007/appointment-service:1.0
+    image: appointment-service:latest
     ports:
       - "5000:5000"
-    env_file:
-      - .env
+    environment:
+      PORT: 5000
+      DB_HOST: db
+      DB_PORT: 1433
+      DB_USER: sa
+      MSSQL_DATABASE: master
+      MSSQL_ROOT_PASSWORD: root@Parrot
+      CORS_ORIGIN: http://localhost:3000
     depends_on:
       - db
 
