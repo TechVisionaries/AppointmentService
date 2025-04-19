@@ -1,0 +1,64 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Build Docker image
+      run: docker build -t appointment-service:latest .
+      
+    - name: Log in to Docker Hub
+      if: github.ref == 'refs/heads/main'
+      # run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u huntrix007 --password-stdin
+      run: echo "${{ secrets.ECR_TOKEN }}" | docker login --username AWS --password-stdin 575108922870.dkr.ecr.us-east-1.amazonaws.com
+      
+    # - name: Push to Docker Hub
+    #   if: github.ref == 'refs/heads/main'
+    #   run: |
+    #     docker tag huntrix007/appointment-service huntrix007/appointment-service:${{ github.sha }}
+    #     docker push huntrix007/appointment-service:${{ github.sha }}
+    #     docker push huntrix007/appointment-service:latest
+    - name: Push to AWS ECR
+      if: github.ref == 'refs/heads/main'
+      run: |
+        IMAGE_URI=575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
+        docker tag appointment-service:latest $IMAGE_URI
+        docker push $IMAGE_URI
+        echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    # - name: Fill in the new task definition
+    #   run: |
+    #     sed "s|<IMAGE_URI>|$IMAGE_URI|g" ecs-task-def.json > task-def.json
+
+    # - name: Register ECS task definition
+    #   id: task-def
+    #   run: |
+    #     TASK_DEF_ARN=$(aws ecs register-task-definition \
+    #       --cli-input-json file://task-def.json \
+    #       --query 'taskDefinition.taskDefinitionArn' \
+    #       --output text \
+    #       --region us-east-1)
+    #     echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+
+    - name: Deploy ECS service
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ecs-task-def.json
+        service: appointment-service
+        cluster: MediSyncCluster
+        wait-for-service-stability: true
