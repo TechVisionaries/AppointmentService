@@ -5,7 +5,7 @@ import asyncHandler from 'express-async-handler';
 const authLvl1 = asyncHandler(async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!authHeader?.startsWith("Bearer ")) {
         return res.status(401).json({ message: "Missing or malformed token" });
     }
 
@@ -20,6 +20,7 @@ const authLvl1 = asyncHandler(async (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
+        console.error("JWT verification failed:", error.message);
         return res.status(403).json({ message: "Invalid or expired token" });
     }  
 });
