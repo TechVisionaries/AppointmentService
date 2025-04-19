@@ -31,3 +31,11 @@ jobs:
       run: |
         docker tag appointment-service:latest 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
         docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
+
+    - name: Deploy to ECS
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        cluster: MediSyncCluster
+        service: appointment
+        image: "575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest"
+        wait-for-service-stability: true
