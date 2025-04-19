@@ -53,12 +53,12 @@ jobs:
           --query 'taskDefinition.taskDefinitionArn' \
           --output text \
           --region us-east-1)
-        echo "task-definition=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
+        echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
 
-    - name: Deploy ECS service
+    - name: Deploy ECS service ${{ env.TASK_DEF_ARN }}
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        task-definition: ${{ env.TASK_DEF_ARN }}
         service: appointment
         cluster: MediSyncCluster
         wait-for-service-stability: true
