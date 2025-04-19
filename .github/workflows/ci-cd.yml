@@ -17,11 +17,16 @@ jobs:
       
     - name: Log in to Docker Hub
       if: github.ref == 'refs/heads/main'
-      run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u huntrix007 --password-stdin
+      # run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u huntrix007 --password-stdin
+      run: echo "${{ secrets.ECR_TOKEN }}" | docker login --username AWS --password-stdin 575108922870.dkr.ecr.us-east-1.amazonaws.com
       
     - name: Push to Docker Hub
       if: github.ref == 'refs/heads/main'
+      # run: |
+      #   docker tag huntrix007/appointment-service huntrix007/appointment-service:${{ github.sha }}
+      #   docker push huntrix007/appointment-service:${{ github.sha }}
+      #   docker push huntrix007/appointment-service:latest
       run: |
-        docker tag huntrix007/appointment-service huntrix007/appointment-service:${{ github.sha }}
-        docker push huntrix007/appointment-service:${{ github.sha }}
-        docker push huntrix007/appointment-service:latest
+        docker tag huntrix007/appointment-service 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:${{ github.sha }}
+        docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:${{ github.sha }}
+        docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
