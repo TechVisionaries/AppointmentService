@@ -29,5 +29,5 @@ jobs:
     - name: Push to AWS ECR
       if: github.ref == 'refs/heads/main'
       run: |
-        docker tag appointment-service 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
+        docker tag appointment-service:latest 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
         docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest

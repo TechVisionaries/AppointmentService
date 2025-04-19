@@ -1,32 +1,30 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from '../config/db.js';
+import mongoose from 'mongoose';
 
-const Appointment = sequelize.define('Appointment', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  patientId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  doctorId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  date: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
-  },
-  time: {
-    type: DataTypes.TIME,
-    allowNull: false,
-  },
-  reason: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
+const appointmentSchema = new mongoose.Schema({
+    patientId: {
+        type: Number,
+        required: true,
+    },
+    doctorId: {
+        type: Number,
+        required: true,
+    },
+    date: {
+        type: Date,
+        required: true,
+    },
+    time: {
+        type: String,
+        required: true,
+    },
+    reason: {
+        type: String,
+        default: 'No reason provided',
+    },
+}, {
+    timestamps: true,
 });
+
+const Appointment = mongoose.model('Appointment', appointmentSchema);
 
 export default Appointment;
