@@ -41,24 +41,24 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Fill in the new task definition
-      run: |
-        sed "s|<IMAGE_URI>|$IMAGE_URI|g" ecs-task-def.json > task-def.json
+    # - name: Fill in the new task definition
+    #   run: |
+    #     sed "s|<IMAGE_URI>|$IMAGE_URI|g" ecs-task-def.json > task-def.json
 
-    - name: Register ECS task definition
-      id: task-def
-      run: |
-        TASK_DEF_ARN=$(aws ecs register-task-definition \
-          --cli-input-json file://task-def.json \
-          --query 'taskDefinition.taskDefinitionArn' \
-          --output text \
-          --region us-east-1)
-        echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+    # - name: Register ECS task definition
+    #   id: task-def
+    #   run: |
+    #     TASK_DEF_ARN=$(aws ecs register-task-definition \
+    #       --cli-input-json file://task-def.json \
+    #       --query 'taskDefinition.taskDefinitionArn' \
+    #       --output text \
+    #       --region us-east-1)
+    #     echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
 
-    - name: Deploy ECS service ${{ env.TASK_DEF_ARN }}
+    - name: Deploy ECS service
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ env.TASK_DEF_ARN }}
+        task-definition: ecs-task-def.json
         service: appointment
         cluster: MediSyncCluster
         wait-for-service-stability: true
