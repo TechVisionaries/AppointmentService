@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v3
       
     - name: Build Docker image
-      run: docker build -t 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest .
+      run: docker build -t appointment-service:latest .
       
     - name: Log in to Docker Hub
       if: github.ref == 'refs/heads/main'
@@ -29,6 +29,5 @@ jobs:
     - name: Push to AWS ECR
       if: github.ref == 'refs/heads/main'
       run: |
-        docker tag 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:${{ github.sha }}
-        docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:${{ github.sha }}
+        docker tag appointment-service 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
         docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
