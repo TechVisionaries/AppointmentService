@@ -45,20 +45,20 @@ jobs:
       run: |
         sed "s|<IMAGE_URI>|$IMAGE_URI|g" ecs-task-def.json > task-def.json
 
-    - name: Register new task definition
+    - name: Register ECS task definition
       id: task-def
       run: |
         TASK_DEF_ARN=$(aws ecs register-task-definition \
-          --region us-east-1 \
           --cli-input-json file://task-def.json \
           --query 'taskDefinition.taskDefinitionArn' \
-          --output text)
-        echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+          --output text \
+          --region us-east-1)
+        echo "task-definition=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
 
-    - name: Deploy to ECS service
+    - name: Deploy ECS service
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ env.TASK_DEF_ARN }}
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: appointment
         cluster: MediSyncCluster
         wait-for-service-stability: true
