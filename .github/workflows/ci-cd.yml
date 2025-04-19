@@ -29,13 +29,28 @@ jobs:
     - name: Push to AWS ECR
       if: github.ref == 'refs/heads/main'
       run: |
-        docker tag appointment-service:latest 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
-        docker push 575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
+        IMAGE_URI=575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
+        docker tag appointment-service:latest $IMAGE_URI
+        docker push $IMAGE_URI
+        echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
-    - name: Deploy to ECS
+    - name: Fill in the new task definition
+      run: |
+        sed "s|<IMAGE_URI>|$IMAGE_URI|g" ecs-task-def.json > task-def.json
+
+    - name: Register new task definition
+      id: task-def
+      run: |
+        TASK_DEF_ARN=$(aws ecs register-task-definition \
+          --cli-input-json file://task-def.json \
+          --query 'taskDefinition.taskDefinitionArn' \
+          --output text)
+        echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+
+    - name: Deploy to ECS service
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        cluster: MediSyncCluster
+        task-definition: ${{ env.TASK_DEF_ARN }}
         service: appointment
-        image: "575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest"
+        cluster: MediSyncCluster
         wait-for-service-stability: true

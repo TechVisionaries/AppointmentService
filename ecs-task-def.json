@@ -1,0 +1,61 @@
+{
+    "family": "appointment-service-task",
+    "containerDefinitions": [
+        {
+            "name": "appointment-service",
+            "image": "575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "5000-tcp-appointment",
+                    "containerPort": 5000,
+                    "hostPort": 5000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "PORT",
+                    "value": "5000"
+                },
+                {
+                    "name": "MONGO_URI",
+                    "value": "mongodb+srv://it21219320:Ja0QFW6NGaNdGdAm@medisync.2tgw8b5.mongodb.net/?retryWrites=true&w=majority&appName=MediSync"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/appointment-service-task",
+                    "mode": "non-blocking",
+                    "awslogs-create-group": "true",
+                    "max-buffer-size": "25m",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "executionRoleArn": "arn:aws:iam::575108922870:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "2048",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "enableFaultInjection": false
+}
