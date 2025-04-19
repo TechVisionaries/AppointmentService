@@ -59,6 +59,7 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ecs-task-def.json
+        region: us-east-1
         service: appointment
         cluster: MediSyncCluster
         wait-for-service-stability: true
