@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    # Step 1: Checkout the repository
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
+    # Step 2: Run SonarCloud Scan
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v2
       with:
@@ -21,22 +24,18 @@ jobs:
           -Dsonar.projectKey=techvisionaries-1
           -Dsonar.host.url=https://sonarcloud.io
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-      
-    - name: Build Docker image
+
+    # Step 3: Build Docker image
+    - name: Build Docker Image
       run: docker build -t appointment-service:latest .
-      
-    - name: Log in to Docker Hub
+
+    # Step 4: Log in to AWS ECR
+    - name: Log in to AWS ECR
       if: github.ref == 'refs/heads/main'
-      # run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u huntrix007 --password-stdin
       run: echo "${{ secrets.ECR_TOKEN }}" | docker login --username AWS --password-stdin 575108922870.dkr.ecr.us-east-1.amazonaws.com
-      
-    # - name: Push to Docker Hub
-    #   if: github.ref == 'refs/heads/main'
-    #   run: |
-    #     docker tag huntrix007/appointment-service huntrix007/appointment-service:${{ github.sha }}
-    #     docker push huntrix007/appointment-service:${{ github.sha }}
-    #     docker push huntrix007/appointment-service:latest
-    - name: Push to AWS ECR
+
+    # Step 5: Push Docker image to AWS ECR
+    - name: Push Docker Image to AWS ECR
       if: github.ref == 'refs/heads/main'
       run: |
         IMAGE_URI=575108922870.dkr.ecr.us-east-1.amazonaws.com/appointment-service:latest
@@ -44,28 +43,24 @@ jobs:
         docker push $IMAGE_URI
         echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
-    - name: Configure AWS credentials
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Step 2: Configure AWS credentials
+    - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    # - name: Fill in the new task definition
-    #   run: |
-    #     sed "s|<IMAGE_URI>|$IMAGE_URI|g" ecs-task-def.json > task-def.json
-
-    # - name: Register ECS task definition
-    #   id: task-def
-    #   run: |
-    #     TASK_DEF_ARN=$(aws ecs register-task-definition \
-    #       --cli-input-json file://task-def.json \
-    #       --query 'taskDefinition.taskDefinitionArn' \
-    #       --output text \
-    #       --region us-east-1)
-    #     echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
-
-    - name: Deploy ECS service
+    # Step 3: Deploy ECS service
+    - name: Deploy ECS Service
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ecs-task-def.json
