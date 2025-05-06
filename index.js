@@ -28,6 +28,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 // routes
+app.get('/api/appointments/health', (req, res) => res.send('Server is ready!'));
 app.use('/api/appointments', appointmentRoutes);
 
 
@@ -40,7 +41,6 @@ if (process.env.NODE_ENV === 'production') {
     );
 } else {
     app.get('/', (req, res) => res.send('Server is ready!'));
-    app.get('/api/appointments/health', (req, res) => res.send('Server is ready!'));
 }
 
 app.use(notFound);
