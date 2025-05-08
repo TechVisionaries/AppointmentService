@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 
 // routes
 app.get('/api/appointments/health', (req, res) => res.send('Server is ready!'));
-app.use('/api/appointments', appointmentRoutes);
+app.use('/api/appointments', appointmentRoutes); 
  
 if (process.env.NODE_ENV === 'production') {
     const __dirname = path.resolve();
