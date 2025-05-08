@@ -3,8 +3,6 @@ import asyncHandler from 'express-async-handler';
 
 // Lowest level of authorization - Anyone who has logged in can access
 const authLvl1 = asyncHandler(async (req, res, next) => {
-    next();
-    return;
     const authHeader = req.headers.authorization;
 
     if (!authHeader?.startsWith("Bearer ")) {
@@ -29,8 +27,6 @@ const authLvl1 = asyncHandler(async (req, res, next) => {
 
 // Middle level of authorization - Only Faculty and Admin can access
 const authLvl2 = asyncHandler(async (req, res, next) => {
-    next();
-    return;
     if (!req.user || req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied. Admins only." });
     }
