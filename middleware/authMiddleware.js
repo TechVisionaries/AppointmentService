@@ -27,7 +27,7 @@ const authLvl1 = asyncHandler(async (req, res, next) => {
 
 // Middle level of authorization - Only Faculty and Admin can access
 const authLvl2 = asyncHandler(async (req, res, next) => {
-    if (!req.user || req.user.role !== "admin") {
+    if (!req.user || req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Access denied. Admins only." });
     }
     next();
