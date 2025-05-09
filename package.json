@@ -20,6 +20,7 @@
   "homepage": "https://github.com/TechVisionaries/AppointmentService#readme",
   "dependencies": {
     "appointmentservice": "file:",
+    "base64url": "^3.0.1",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

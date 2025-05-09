@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
+import base64url from "base64url";
 
 // Lowest level of authorization - Anyone who has logged in can access
 const authLvl1 = asyncHandler(async (req, res, next) => {
@@ -9,11 +10,10 @@ const authLvl1 = asyncHandler(async (req, res, next) => {
         return res.status(401).json({ message: "Missing or malformed token" });
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = authHeader.split(" ")[1]; 
 
     try {
-        const decodedSecret = Buffer.from(process.env.JWT_SECRET, "base64");
-
+        const decodedSecret = base64url.toBuffer(process.env.JWT_SECRET);
         const decoded = jwt.verify(token, decodedSecret);
 
 
