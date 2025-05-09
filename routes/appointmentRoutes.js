@@ -7,6 +7,7 @@ const router = express.Router();
 // Route to create a new appointment
 router.post('/', authLvl1, authLvl2, createAppointment);
 
+//sds
 // Route to get all appointments
 router.get('/', authLvl1, getAppointments);
 
